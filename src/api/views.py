@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from api.serializers import (CategorySerializer, CustomerSerializer,
                              QuestionSerializer, QuizSerializer)
-from core.permission import IsSuperUser
+from api.permission import IsSuperUser
 from quiz.models import Category, Question, Quiz
 
 

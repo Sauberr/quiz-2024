@@ -3,4 +3,4 @@
 python src/manage.py migrate
 python src/manage.py collectstatic --noinput
 
-gunicorn -w 6 -b 0:8000 --chdir ./src config.wsgi:application --log-level=INFO
+gunicorn -w ${WSGI_WORKERS} -b 0:${WSGI_PORT} --chdir ./src config.wsgi:application --log-level=${WSGI_LOG_LEVEL}

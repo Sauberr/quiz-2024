@@ -9,7 +9,7 @@ services:
     command:
       - ./commands/start_server_${MODE}.sh
     ports:
-      - 8010:8000
+      - ${LOCAL_PORT}:${WSGI_PORT}
     volumes:
       - ./src:/quiz/src
       - ./commands:/quiz/commands
@@ -80,6 +80,76 @@ services:
       - .env
     depends_on:
       - backend
+
+  redis:
+    image: redis
+    container_name: redis_container
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - backend
+
+  celery:
+    build: ./
+    container_name: celery-container
+    command:
+      - ./commands/start_celery.sh
+    restart: on-failure
+    volumes:
+      - ./src:/quiz
+      - ./commands:/quiz/commands
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - backend
+
+  celerybeat:
+    build: ./
+    container_name: celerybeat-container
+    command:
+      - ./commands/start_celerybeat.sh
+    restart: on-failure
+    volumes:
+      - ./src:/quiz
+      - ./commands:/quiz/commands
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - backend
+
+  flower:
+    build: ./
+    container_name: flower-container
+    volumes:
+      - ./src:/quiz
+    env_file:
+      - .env
+    command: celery -A config flower --broker=redis://redis
+    ports:
+      - 5556:5555
+    depends_on:
+      - celery
+
+  redisadmin:
+    image: redislabs/redisinsight
+    container_name: redisadmin
+    restart: on-failure
+    ports:
+      - 8001:8001
+    env_file: .env
+
+  redisadminold:
+    image: rediscommander/redis-commander:latest
+    container_name: redisadminold
+    hostname: redisadminold
+    restart: always
+    ports:
+      - 8092:8081
+    env_file:
+      - .env
 
 
 volumes:
