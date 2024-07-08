@@ -1,3 +1,3 @@
 #!/bin/bash
 
-celery -A config worker -l ${CELERY_LOG_LEVEL} -c ${CELERY_NUM_WORKERS}
+celery -A config.celery_app.app worker -l ${CELERY_LOG_LEVEL} -c ${CELERY_NUM_WORKERS}

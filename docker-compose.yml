@@ -83,55 +83,51 @@ services:
 
   redis:
     image: redis
-    container_name: redis_container
     env_file:
       - .env
-    restart: always
+    restart: on-failure
     depends_on:
       - backend
 
   celery:
-    build: ./
-    container_name: celery-container
-    command:
-      - ./commands/start_celery.sh
-    restart: on-failure
-    volumes:
-      - ./src:/quiz
-      - ./commands:/quiz/commands
-    env_file:
-      - .env
-    depends_on:
-      - redis
-      - backend
+      build: ./
+      command: celery -A config.celery_app.app worker -l ${CELERY_LOG_LEVEL} -c ${CELERY_NUM_WORKERS}
+      restart: always
+      volumes:
+         - ./src:/quiz/src
+      working_dir: /quiz/src
+      env_file:
+        - .env
+      depends_on:
+        - redis
+        - backend
 
   celerybeat:
-    build: ./
-    container_name: celerybeat-container
-    command:
-      - ./commands/start_celerybeat.sh
-    restart: on-failure
-    volumes:
-      - ./src:/quiz
-      - ./commands:/quiz/commands
-    env_file:
-      - .env
-    depends_on:
-      - redis
-      - backend
+      build: ./
+      command: celery -A config.celery_app.app worker -l ${CELERY_LOG_LEVEL} -S django
+      restart: always
+      volumes:
+        - ./src:/quiz/src
+      env_file:
+        - .env
+      working_dir: /quiz/src
+      depends_on:
+        - redis
+        - backend
 
   flower:
-    build: ./
-    container_name: flower-container
-    volumes:
-      - ./src:/quiz
-    env_file:
-      - .env
-    command: celery -A config flower --broker=redis://redis
-    ports:
-      - 5556:5555
-    depends_on:
-      - celery
+       build: ./
+       volumes:
+         - ./src:/quiz/src
+       env_file:
+         - .env
+       command: celery -A config.celery_app.app flower --broker=redis://redis
+       working_dir: /quiz/src
+       ports:
+         - 5556:5555
+       depends_on:
+         - celery
+         - redis
 
   redisadmin:
     image: redislabs/redisinsight
