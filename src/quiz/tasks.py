@@ -10,7 +10,6 @@ def mine_bitcoin():
     time.sleep(random.randint(1, 10))
 
 
-
 @shared_task
 def normalize_email_task(filter):
     users = get_user_model().objects.filter(**filter)
