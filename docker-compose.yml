@@ -89,18 +89,21 @@ services:
     depends_on:
       - backend
 
-  celery:
+  celery-flower:
       build: ./
-      command: celery -A config.celery_app.app worker -l ${CELERY_LOG_LEVEL} -c ${CELERY_NUM_WORKERS}
+      command: supervisord -c /etc/supervisor/conf.d/supervisord.conf
       restart: always
       volumes:
          - ./src:/quiz/src
       working_dir: /quiz/src
       env_file:
         - .env
+      ports:
+        - 5556:5555
       depends_on:
         - redis
         - backend
+
 
   celerybeat:
       build: ./
@@ -114,20 +117,6 @@ services:
       depends_on:
         - redis
         - backend
-
-  flower:
-       build: ./
-       volumes:
-         - ./src:/quiz/src
-       env_file:
-         - .env
-       command: celery -A config.celery_app.app flower --broker=redis://redis
-       working_dir: /quiz/src
-       ports:
-         - 5556:5555
-       depends_on:
-         - celery
-         - redis
 
   redisadmin:
     image: redislabs/redisinsight
@@ -147,6 +136,19 @@ services:
     env_file:
       - .env
 
+  systemeio-supervisord-monitor:
+    container_name: my-supervisord-monitor
+    image: konekod/supervisord-monitor:latest
+    environment:
+      - SUPERVISORS_SERVERS=[{"ip":"my-php-monolith","port":9551,"name":"monolith","username":"default","password":"default"}]
+    ports:
+      - "10011:8080"
+    networks:
+      - my_app_network
+
+networks:
+  my_app_network:
+    driver: bridge
 
 volumes:
   static_content: { }
