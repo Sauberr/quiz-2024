@@ -17,8 +17,8 @@ services:
       - media_content:/quiz/src/media
     env_file:
       - .env
-    depends_on:
-      - postgres
+#    depends_on:
+#      - postgres
 
 #  postgres:
 #    image: postgres:15
@@ -78,8 +78,8 @@ services:
       - 443:443
     env_file:
       - .env
-#    depends_on:
-#      - backend
+    depends_on:
+      - backend
 
 #  redis:
 #    image: redis
