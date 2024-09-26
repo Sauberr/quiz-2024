@@ -145,16 +145,28 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "auth/password-reset/{uid}/{token}",
 }
 
-CELERY_BROKER_URL = 'redis://redis'
-CELERY_RESULT_BACKEND = 'redis://redis'
+CELERY_BROKER_URL = "redis://redis"
+CELERY_RESULT_BACKEND = "redis://redis"
 
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
 
 CELERY_BEAT_SCHEDULE = {
-    'some_periodic_task': {
-        'task': 'quiz.tasks.mine_bitcoin',
-        'schedule': crontab(minute='*/2'),
+    "some_periodic_task": {
+        "task": "quiz.tasks.mine_bitcoin",
+        "schedule": crontab(minute="*/2"),
     },
+    "each_birthdays_at_the_time_of_birth": {
+        "task": "quiz.tasks.birthday_task",
+        "schedule": crontab(minute="0", hour="0", day_of_month="1", month_of_year="1"),
+    },
+    "each_tuesday_at_noon": {
+        "task": "quiz.tasks.tuesday_task",
+        "schedule": crontab(minute="0", hour="12", day_of_week="tue"),
+    },
+    "each_leap_year_13th_every_13_minutes": {
+        "task": "quiz.tasks.leap_year_friday_13th_task",
+        "schedule": crontab(minute="*/13", hour="*", day_of_month="13", month_of_year="2", day_of_week="fri"),
+    }
 }

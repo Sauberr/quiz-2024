@@ -5,9 +5,9 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 
+from api.permission import IsSuperUser
 from api.serializers import (CategorySerializer, CustomerSerializer,
                              QuestionSerializer, QuizSerializer)
-from api.permission import IsSuperUser
 from quiz.models import Category, Question, Quiz
 
 
