@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from faker import Faker
 
 from core.models import BaseModel
 
@@ -10,6 +11,14 @@ class Category(BaseModel):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def generate_instances(cls, count: int = 5):
+        faker = Faker()
+        for _ in range(count):
+            category = cls.objects.create(
+                name=faker.word(),
+            )
 
 
 class Quiz(models.Model):
@@ -46,6 +55,18 @@ class Quiz(models.Model):
         self.full_clean()
         return super().save(*args, **kwargs)
 
+    @classmethod
+    def generate_instances(cls, count: int = 5):
+        faker = Faker()
+        for _ in range(count):
+            quiz = cls.objects.create(
+                title=faker.sentence(),
+                description=faker.text(),
+                image="default.jpg",
+                category=Category.objects.first(),
+                level=faker.random_int(min=0, max=2),
+            )
+
 
 class Result(BaseModel):
     quiz = models.ForeignKey("quiz.Quiz", related_name="results", on_delete=models.CASCADE)
@@ -53,6 +74,15 @@ class Result(BaseModel):
 
     def __str__(self):
         return f"{self.quiz.title} - {self.user.email}"
+
+    @classmethod
+    def generate_instances(cls, count: int = 5):
+        faker = Faker()
+        for _ in range(count):
+            result = cls.objects.create(
+                quiz=Quiz.objects.first(),
+                user=get_user_model().objects.first(),
+            )
 
 
 class Question(BaseModel):
@@ -65,6 +95,16 @@ class Question(BaseModel):
     def __str__(self):
         return f"{self.quiz.title} - {self.order_number}"
 
+    @classmethod
+    def generate_instances(cls, count: int = 5):
+        faker = Faker()
+        for _ in range(count):
+            question = cls.objects.create(
+                quiz=Quiz.objects.first(),
+                order_number=faker.random_int(min=1, max=20),
+                text=faker.text(),
+            )
+
 
 class Choice(BaseModel):
     question = models.ForeignKey("quiz.Question", related_name="choices", on_delete=models.CASCADE)
@@ -73,3 +113,13 @@ class Choice(BaseModel):
 
     def __str__(self):
         return f"{self.question.text} - {self.text}"
+
+    @classmethod
+    def generate_instances(cls, count: int = 5):
+        faker = Faker()
+        for _ in range(count):
+            choice = cls.objects.create(
+                question=Question.objects.first(),
+                text=faker.word(),
+                is_correct=faker.boolean(),
+            )
