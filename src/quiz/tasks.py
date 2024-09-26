@@ -4,6 +4,9 @@ from django.utils import timezone
 
 from celery import shared_task
 from django.contrib.auth import get_user_model
+from redis.commands.search.reducers import count
+
+from quiz.models import Category, Quiz, Question, Choice
 
 
 @shared_task
@@ -48,3 +51,23 @@ def leap_year_friday_13th_task():
     now = timezone.now()
     if now.year() % 4 == 0 and now.weekday() == 4 and now.day() == 13:
         print("It's Friday 13th in a leap year")
+
+
+@shared_task
+def generate_categories(instance_count: int = 5):
+    Category.generate_instances(instance_count)
+
+
+@shared_task
+def generate_quizzes(instance_count: int = 5):
+    Quiz.generate_instances(instance_count)
+
+
+@shared_task
+def generate_questions(instance_count: int = 5):
+    Question.generate_instances(instance_count)
+
+
+@shared_task
+def generate_choices(instance_count: int = 5):
+    Choice.generate_instances(instance_count)
