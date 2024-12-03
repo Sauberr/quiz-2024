@@ -31,11 +31,10 @@ All actions should be executed from the source directory of the project and only
 3. Run project dependencies, migrations, fill the database with the fixture data etc.:
    ```bash
    ./manage.py migrate
-   ./manage.py loaddata <path_to_fixture_files>
-   ./manage.py runserver 
+   ./manage.py loaddata <path_to_fixture_files> 
    ```
    
-4. Docker (https://www.docker.com/):
+4. Docker :
    ```bash
    docker-compose up
    ```
