@@ -39,4 +39,6 @@ All actions should be executed from the source directory of the project and only
    docker-compose up
    ```
    
+## License
 
+This project uses the [MIT] license(https://github.com/Sauberr/quiz-2024/blob/dev/LICENSE)
